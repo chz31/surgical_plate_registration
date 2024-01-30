@@ -1,4 +1,8 @@
-###SVD
+###SVD based registration
+###The plate is only allowed to rotate around a partcular landmark: landmark 2 posterior stop
+###Thus, instead of the centroid, the plate and orbit landmark sets are both translated to the origin by subtracting the posterior stop
+###Rotation is then calculated afterwards
+
 import numpy as np
 
 source_node = slicer.util.getNode('plate_lm_harden') #get source lm node: the plate lm
@@ -40,7 +44,7 @@ T = np.identity(4)
 T[:3, :3] = rotation_matrix
 T[:3, 3] = t
 
-# 
+# Create a homogeneous transformation node in Slicer
 rotationTransformNode =  slicer.mrmlScene.AddNewNodeByClass('vtkMRMLTransformNode', "svp_rotaion_transform")
 rotationTransformNode.SetMatrixTransformToParent(slicer.util.vtkMatrixFromArray(T))
 
