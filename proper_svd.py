@@ -29,13 +29,3 @@ T = np.identity(4)
 T[:3, :3] = rotation_matrix
 T[:3, 3] = t
 
-# rotation_matrix_slicer = np.zeros(shape= (4, 4))
-# 
-# point = [0, 0, 0]
-# for i in range(3):
-#   rotation_matrix_slicer[i, 0:3] = rotation_matrix[i, :]
-#   
-# rotation_matrix_slicer[3, :] = [0, 0, 0, 1]
-# 
-rotationTransformNode =  slicer.mrmlScene.AddNewNodeByClass('vtkMRMLTransformNode', "svp_roataion_transform")
-rotationTransformNode.SetMatrixTransformToParent(slicer.util.vtkMatrixFromArray(T))
