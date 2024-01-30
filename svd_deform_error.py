@@ -1,23 +1,14 @@
 ###SVD
 import numpy as np
 
-source_node = slicer.util.getNode('plate_lm_harden') #get source lm node: the plate lm
-target_node = slicer.util.getNode('orbit_lm') #get target lm node: the orbit lm
+source_points = np.array([[29.92973456, 65.05863408, -692.87207321], [20.58772087,38.86774826, -675.45440674],[18.2662661, 57.31554544, -682.06144071]])
+target_points = np.array([[27.47413063, 61.97033691, -689.95812988], [20.58772087, 38.86774826, -675.45440674], [15.33987617, 60.87537766, -681.76153564]])
 
-source_points = np.zeros(shape=(source_node.GetNumberOfControlPoints(), 3))
-target_points = np.zeros(shape=(target_node.GetNumberOfControlPoints(), 3))
-
-point = [0, 0, 0]
-
-for i in range(source_node.GetNumberOfControlPoints()):
-  source_node.GetNthControlPointPosition(i, point)
-  source_points[i, :] = point
-  # subjectFiducial.SetNthControlPointLocked(i, 1)
-  target_node.GetNthControlPointPosition(i, point)
-  target_points[i, :] = point
+# source_points = np.array([[29.92973456, 65.05863408, -692.87207321], [20.58772087,38.86774826, -675.45440674],[18.2662661, 57.31554544, -682.06144071]])
+# target_points = np.array([[27.47413063, 61.97033691, -689.95812988], [20.58772087, 38.86774826, -675.45440674], [15.33987617, 60.87537766, -681.76153564]])
 
 # Define the point around which you want to rotate
-rotation_center = np.array([20.588, 38.868, -675.454]) # Specify the center point
+rotation_center = target_points[1, :] # Specify the center point as the posterior stop
 
 # Calculate the translation to bring the rotation center to the origin
 translation = -rotation_center
@@ -27,7 +18,9 @@ translated_source_points = source_points + translation
 translated_target_points = target_points + translation
 
 # Perform singular value decomposition (SVD)
+# U, _, Vt = np.linalg.svd(translated_target_points.T @ translated_source_points, full_matrices=False)
 U, _, Vt = np.linalg.svd(translated_source_points.T @ translated_target_points, full_matrices=False)
+
 
 # Calculate the optimal rotation matrix
 rotation_matrix = Vt.T @ U.T
@@ -39,18 +32,3 @@ t = rotation_center.T - np.dot(rotation_matrix, rotation_center.T)
 T = np.identity(4)
 T[:3, :3] = rotation_matrix
 T[:3, 3] = t
-
-# 
-rotationTransformNode =  slicer.mrmlScene.AddNewNodeByClass('vtkMRMLTransformNode', "svp_rotaion_transform")
-rotationTransformNode.SetMatrixTransformToParent(slicer.util.vtkMatrixFromArray(T))
-
-# rotated_translated_source_points = np.dot(translated_source_points, rotation_matrix.T)
-
-# Translate the rotated points back to the original position
-# rotated_source_points = rotated_translated_source_points - translation
-
-# rotatedSourceNode =  slicer.mrmlScene.AddNewNodeByClass('vtkMRMLMarkupsFiducialNode', "svp_rotated_source_lm")
-# for i in range(rotated_source_points.shape[0]):
-#     rotatedSourceNode.AddControlPoint(rotated_source_points[i, :])
-
-# print(rotated_source_points)
