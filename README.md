@@ -9,3 +9,5 @@
 -The configurations are then translated back to their original positions.
 
 -Transformation matrix calculated accordingly.
+
+-MirrorOrbitRecon.py is the python documents in case the dependency, ALPACA module of SlicerMorph, ran into issues. Users can replace it with the one installed from the Extension Manager to install dependencies and run the program.
